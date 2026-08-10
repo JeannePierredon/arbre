@@ -1,0 +1,42 @@
+[
+  {
+    "id": "p1",
+    "nom": "Jean Dupont",
+    "texte": "Agriculteur né en Normandie, marié à Marie en 1950.",
+    "photo": "photos/placeholder.png",
+    "parents": [],
+    "enfants": ["p3", "p4"]
+  },
+  {
+    "id": "p2",
+    "nom": "Marie Lefèvre",
+    "texte": "Institutrice, passionnée de jardinage.",
+    "photo": "photos/placeholder.png",
+    "parents": [],
+    "enfants": ["p3", "p4"]
+  },
+  {
+    "id": "p3",
+    "nom": "Pierre Dupont",
+    "texte": "Fils aîné de Jean et Marie, devenu médecin.",
+    "photo": "photos/placeholder.png",
+    "parents": ["p1", "p2"],
+    "enfants": ["p5"]
+  },
+  {
+    "id": "p4",
+    "nom": "Claire Dupont",
+    "texte": "Fille cadette, partie vivre au Canada.",
+    "photo": "photos/placeholder.png",
+    "parents": ["p1", "p2"],
+    "enfants": []
+  },
+  {
+    "id": "p5",
+    "nom": "Lucas Dupont",
+    "texte": "Petit-fils de Jean et Marie, étudiant en informatique.",
+    "photo": "photos/placeholder.png",
+    "parents": ["p3"],
+    "enfants": []
+  }
+]

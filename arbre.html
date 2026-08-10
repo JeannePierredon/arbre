@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Arbre généalogique — Fiche</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #f7f4ef;
+    color: #2b2b2b;
+    margin: 0;
+    padding: 2rem;
+  }
+  a.retour {
+    display: inline-block;
+    margin-bottom: 1.5rem;
+    text-decoration: none;
+    color: #4a4a4a;
+  }
+  .fiche {
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+    background: white;
+    border-radius: 14px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  .fiche img {
+    width: 130px;
+    height: 130px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+  }
+  .fiche h1 {
+    margin: 0 0 0.5rem;
+    font-size: 1.4rem;
+  }
+  .fiche p {
+    color: #555;
+  }
+  h2.titre-section {
+    text-align: center;
+    margin: 2rem 0 1rem;
+    font-size: 1.1rem;
+    color: #444;
+  }
+  .generation {
+    margin-bottom: 1.5rem;
+  }
+  .generation-label {
+    text-align: center;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #999;
+    margin-bottom: 0.6rem;
+  }
+  .ligne {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .mini-carte {
+    background: white;
+    border-radius: 10px;
+    padding: 0.6rem 0.8rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    width: 110px;
+    transition: transform 0.15s ease;
+  }
+  .mini-carte:hover {
+    transform: translateY(-3px);
+  }
+  .mini-carte img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 0.4rem;
+  }
+  .mini-carte span {
+    display: block;
+    font-size: 0.75rem;
+  }
+  .courant .mini-carte {
+    border: 2px solid #c9a227;
+  }
+  .vide {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<a class="retour" href="index.html">&larr; Retour à tout le monde</a>
+
+<div id="fiche" class="fiche"></div>
+
+<h2 class="titre-section">⬆️ Ancêtres</h2>
+<div id="ancetres"></div>
+
+<h2 class="titre-section">⬇️ Descendants</h2>
+<div id="descendants"></div>
+
+<script src="data.js"></script>
+<script>
+function creerMiniCarte(id) {
+  const p = PERSONNES[id];
+  if (!p) return null;
+  const a = document.createElement("a");
+  a.className = "mini-carte";
+  a.href = `arbre.html?id=${id}`;
+  a.innerHTML = `
+    <img src="${p.photo}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/55?text=%3F'">
+    <span>${p.nom}</span>
+  `;
+  return a;
+}
+
+// Affiche un tableau de générations (tableau de tableaux d'ids) dans un conteneur.
+// On ITÈRE sur chaque génération, puis sur chaque personne de la génération.
+function afficherGenerations(conteneur, generations, ignorerPremiere) {
+  conteneur.innerHTML = "";
+
+  if (generations.length <= 1) {
+    const vide = document.createElement("p");
+    vide.className = "vide";
+    vide.textContent = "Aucune donnée.";
+    conteneur.appendChild(vide);
+    return;
+  }
+
+  generations.forEach((gen, index) => {
+    if (ignorerPremiere && index === 0) return; // on saute la personne elle-même
+
+    const blocGen = document.createElement("div");
+    blocGen.className = "generation";
+
+    const label = document.createElement("div");
+    label.className = "generation-label";
+    label.textContent = `Génération ${index}`;
+    blocGen.appendChild(label);
+
+    const ligne = document.createElement("div");
+    ligne.className = "ligne";
+
+    gen.forEach(id => {
+      const carte = creerMiniCarte(id);
+      if (carte) ligne.appendChild(carte);
+    });
+
+    blocGen.appendChild(ligne);
+    conteneur.appendChild(blocGen);
+  });
+}
+
+async function init() {
+  await chargerDonnees();
+
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get("id");
+  const personne = PERSONNES[id];
+
+  const ficheDiv = document.getElementById("fiche");
+  if (!personne) {
+    ficheDiv.innerHTML = "<p>Personne introuvable.</p>";
+    return;
+  }
+
+  ficheDiv.innerHTML = `
+    <img src="${personne.photo}" alt="${personne.nom}" onerror="this.src='https://via.placeholder.com/130?text=%3F'">
+    <h1>${personne.nom}</h1>
+    <p>${personne.texte}</p>
+  `;
+
+  const ancetres = getAncetresParGeneration(id);
+  const descendants = getDescendantsParGeneration(id);
+
+  afficherGenerations(document.getElementById("ancetres"), ancetres, true);
+  afficherGenerations(document.getElementById("descendants"), descendants, true);
+}
+init();
+</script>
+
+</body>
+</html>
