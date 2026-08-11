@@ -1,42 +1,157 @@
-[
-  {
-    "id": "p1",
-    "nom": "Jean Dupont",
-    "texte": "Agriculteur né en Normandie, marié à Marie en 1950.",
-    "photo": "photos/placeholder.png",
-    "parents": [],
-    "enfants": ["p3", "p4"]
-  },
-  {
-    "id": "p2",
-    "nom": "Marie Lefèvre",
-    "texte": "Institutrice, passionnée de jardinage.",
-    "photo": "photos/placeholder.png",
-    "parents": [],
-    "enfants": ["p3", "p4"]
-  },
-  {
-    "id": "p3",
-    "nom": "Pierre Dupont",
-    "texte": "Fils aîné de Jean et Marie, devenu médecin.",
-    "photo": "photos/placeholder.png",
-    "parents": ["p1", "p2"],
-    "enfants": ["p5"]
-  },
-  {
-    "id": "p4",
-    "nom": "Claire Dupont",
-    "texte": "Fille cadette, partie vivre au Canada.",
-    "photo": "photos/placeholder.png",
-    "parents": ["p1", "p2"],
-    "enfants": []
-  },
-  {
-    "id": "p5",
-    "nom": "Lucas Dupont",
-    "texte": "Petit-fils de Jean et Marie, étudiant en informatique.",
-    "photo": "photos/placeholder.png",
-    "parents": ["p3"],
-    "enfants": []
-  }
-]
+{
+  "personnes": [
+    {
+      "id": 1,
+      "nom": "Francoise Pierredon",
+      "bio": "Ma maman",
+      "photo": "url_photo",
+      "pere_id": 3,
+      "mere_id": 4,
+      "conjoint": 2,
+      "siblings" : 13,
+      "enfants_ids": [9, 10, 11, 12]
+    },
+{
+      "id": 2,
+      "nom": "Olivier Pierredon",
+      "bio": "Mon Papa",
+      "photo": "url_photo",
+      "pere_id": 5,
+      "mere_id": 6,
+      "conjoint": 1,
+      "siblings" : 7,
+      "enfants_ids": [9, 10, 11, 12]
+    },
+    {
+      "id": 3,
+      "nom": "Antoine Hussherr",
+      "bio": "Père de Francoise",
+      "photo": "url_photo",
+      "pere_id": 20,
+      "mere_id": 21,
+      "conjoint": 4,
+      "siblings" : [28, 29, 30],
+      "enfants_ids": [1, 13, 14]
+    },
+    {
+      "id": 4,
+      "nom": "Marie Louise Hussherr",
+      "bio": "Mère de Francoise",
+      "photo": "url_photo",
+      "pere_id": 22,
+      "mere_id": 23,
+      "conjoint": 3,
+      "siblings" : 31,
+      "enfants_ids": [1, 13, 14]
+    },
+    {
+      "id": 5,
+      "nom": "Marc Pierredon",
+      "bio": "Pere de Olivier",
+      "photo": "url_photo",
+      "pere_id": 24,
+      "mere_id": 25,
+      "conjoint": 6,
+      "siblings" : [32, 33, 34],
+ 
+      "enfants_ids": [2, 7]
+    },
+    {
+      "id": 6,
+      "nom": "Claudie Pierredon",
+      "bio": "Mere de Olivier",
+      "photo": "url_photo",
+      "pere_id": 26,
+      "mere_id": 27,
+      "conjoint": 5,
+      "siblings" : 35,
+      "enfants_ids": [2, 7]
+    },
+        {
+      "id": 7,
+      "nom": "Laurent Pierredon",
+      "bio": "Frere de Olivier",
+      "photo": "url_photo",
+      "pere_id": 5,
+      "mere_id": 6,
+      "conjoint": null,
+      "siblings" : 2,
+      "enfants_ids": 8
+    },
+        {
+      "id": 8,
+      "nom": "Alicia Pierredon",
+      "bio": "Fille de Laurent",
+      "photo": "url_photo",
+      "pere_id": 7,
+      "mere_id": null,
+      "conjoint": null,
+      "siblings" : null,
+      "enfants_ids": null
+    },
+        {
+      "id": 9,
+      "nom": "Romain Pierredon",
+      "bio": "Fils de Francoise et Olivier",
+      "photo": "url_photo",
+      "pere_id": 2,
+      "mere_id": 1,
+      "conjoint": null,
+      "siblings" : [10, 11, 12] ,
+      "enfants_ids": null
+    },
+        {
+      "id": 10,
+      "nom": "Louis Pierredon",
+      "bio": "Fils de Francoise et Olivier",
+      "photo": "url_photo",
+      "pere_id": 2,
+      "mere_id": 1,
+      "conjoint": null,
+      "siblings" : [9, 11, 12] ,
+      "enfants_ids": null
+    },
+        {
+      "id": 11,
+      "nom": "Jeanne Pierredon",
+     "bio": "Fille de Francoise et Olivier",
+      "photo": "url_photo",
+      "pere_id": 2,
+      "mere_id": 1,
+      "conjoint": null,
+      "siblings" : [9, 10, 12] ,
+      "enfants_ids": null
+    },
+        {
+      "id": 12,
+      "nom": "Manon Pierredon",
+      "bio": "Fille de Francoise et Olivier",
+      "photo": "url_photo",
+      "pere_id": 2,
+      "mere_id": 1,
+      "conjoint": null,
+      "siblings" : [9, 10, 11] ,
+      "enfants_ids": null
+    },
+        {
+      "id": 13,
+      "nom": "Danielle Bras",
+      "bio": "Soeur de Francoise",
+      "photo": "url_photo",
+      "pere_id": 3,
+      "mere_id": 4,
+      "conjoint": 15,
+      "siblings" : 1 ,
+      "enfants_ids": 16
+    },
+        {
+      "id": 15,
+      "nom": "Reinhart Bras",
+      "bio": "Mari de Danielle",
+      "photo": "url_photo",
+      "pere_id": null,
+      "mere_id": null,
+      "conjoint": 13,
+      "siblings" : null ,
+      "enfants_ids": 16
+    },
