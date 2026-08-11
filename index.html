@@ -317,24 +317,15 @@
   <script>
     let familyData = { personnes: [] };
 
-    // Fonction pour charger le fichier personnes.json
-    async function loadFamilyData() {
-    try {
-      const response = alias = await fetch('personnes.json'); // ou juste await fetch('personnes.json')
-      if (!response.ok) {
-        throw new Error(`Erreur HTTP: ${response.status}`);
-      }
-      familyData = await response.json();
-      renderGallery(); 
-    } catch (error) {
-      console.error("Impossible de charger personnes.json :", error);
-      alert("Erreur : Impossible de charger personnes.json. Vérifiez que le fichier est bien dans le même dossier et que vous utilisez Live Server !");
-  }
-}
-    // Lancer le chargement au démarrage de la page
-    document.addEventListener("DOMContentLoaded", () => {
-      loadFamilyData();
-    });
+    fetch("personnes.json")
+      .then(response => response.json())
+      .then(data => {
+        familyData = data;
+    
+    // Appelez la fonction qui affiche votre galerie d'accueil au démarrage
+        renderGallery(); 
+      })
+      .catch(error => console.error("Erreur de chargement JSON:", error));
 
     // Indexation rapide des personnes par ID
     const peopleMap = {};
@@ -351,7 +342,7 @@
       if (photo && photo !== "url_photo" && photo.trim() !== "") {
         return photo;
       }
-      return "chat.jpeg";
+      return "cat.jpeg";
     }
 
     // Création d'une carte HTML pour une personne
