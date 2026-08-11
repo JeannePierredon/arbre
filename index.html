@@ -316,20 +316,26 @@
 
   <script>
     let familyData = { personnes: [] };
+    const peopleMap = {}; // Dictionnaire global pour stocker les personnes par ID
 
+    // Chargement dynamique du fichier JSON
     fetch("personnes.json")
-      .then(response => response.json())
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Impossible de charger personnes.json");
+        }
+        return response.json();
+      })
       .then(data => {
         familyData = data;
-    
-    // Appelez la fonction qui affiche votre galerie d'accueil au démarrage
+        familyData.personnes.forEach(p => { 
+          peopleMap[p.id] = p; 
+        });
+
+        // Afficher la galerie une fois les données prêtes
         renderGallery(); 
       })
       .catch(error => console.error("Erreur de chargement JSON:", error));
-
-    // Indexation rapide des personnes par ID
-    const peopleMap = {};
-    familyData.personnes.forEach(p => { peopleMap[p.id] = p; });
 
     // Normalisation des tableaux (enfants_ids / siblings)
     function toArray(val) {
