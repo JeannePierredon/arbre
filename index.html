@@ -1,85 +1,32 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>Arbre généalogique — Toutes les personnes</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<style>
-  body {
-    font-family: system-ui, sans-serif;
-    background: #f7f4ef;
-    color: #2b2b2b;
-    margin: 0;
-    padding: 2rem;
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  .grille {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 1.5rem;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  .carte {
-    background: white;
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-    cursor: pointer;
-    transition: transform 0.15s ease;
-    text-decoration: none;
-    color: inherit;
-  }
-  .carte:hover {
-    transform: translateY(-4px);
-  }
-  .carte img {
-    width: 90px;
-    height: 90px;
-    object-fit: cover;
-    border-radius: 50%;
-    margin-bottom: 0.6rem;
-  }
-  .carte h3 {
-    margin: 0.3rem 0 0.2rem;
-    font-size: 1rem;
-  }
-  .carte p {
-    font-size: 0.8rem;
-    color: #666;
-    margin: 0;
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arbre Généalogique Familial</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h1>🌳 Arbre généalogique — toutes les personnes</h1>
-<div class="grille" id="grille"></div>
+  <header>
+    <h1>Arbre Généalogique Familial</h1>
+    <p>Cliquez sur une personne pour voir sa biographie</p>
+  </header>
 
-<script src="data.js"></script>
-<script>
-async function init() {
-  const personnes = await chargerDonnees();
-  const grille = document.getElementById("grille");
+  <main id="tree-container">
+    <!-- L'arbre sera généré dynamiquement ici -->
+  </main>
 
-  Object.values(personnes).forEach(p => {
-    const carte = document.createElement("a");
-    carte.className = "carte";
-    carte.href = `arbre.html?id=${p.id}`;
-    carte.innerHTML = `
-      <img src="${p.photo}" alt="${p.nom}" onerror="this.src='https://via.placeholder.com/90?text=%3F'">
-      <h3>${p.nom}</h3>
-      <p>${p.texte.slice(0, 40)}${p.texte.length > 40 ? "…" : ""}</p>
-    `;
-    grille.appendChild(carte);
-  });
-}
-init();
-</script>
+  <!-- Fenêtre modale pour afficher la bio -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn">&times;</span>
+      <img id="modal-photo" src="" alt="Photo de profil">
+      <h2 id="modal-nom"></h2>
+      <p id="modal-bio"></p>
+    </div>
+  </div>
 
+  <script src="script.js"></script>
 </body>
 </html>
