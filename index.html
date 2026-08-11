@@ -4,29 +4,497 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arbre Généalogique Familial</title>
-  <link rel="stylesheet" href="style.css">
+  <style>
+    :root {
+      --primary: #2c3e50;
+      --secondary: #3498db;
+      --accent: #e74c3c;
+      --bg-color: #f4f7f6;
+      --card-bg: #ffffff;
+      --text-main: #333333;
+      --text-muted: #666666;
+      --border-color: #e0e0e0;
+      --highlight-bg: #ebf5fb;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 20px;
+      min-height: 100vh;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    header h1 {
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    header p {
+      color: var(--text-muted);
+    }
+
+    /* Barre de recherche */
+    .search-bar {
+      max-width: 400px;
+      margin: 15px auto 0;
+      display: flex;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px 15px;
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      outline: none;
+      font-size: 14px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Bouton de retour */
+    .nav-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1000px;
+      margin: 0 auto 20px;
+    }
+
+    .btn-back {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
+
+    .btn-back:hover {
+      background-color: #1a252f;
+    }
+
+    /* Vues */
+    .view-section {
+      display: none;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    /* Galerie d'accueil */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      padding: 10px;
+    }
+
+    .person-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      position: relative;
+    }
+
+    .person-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+      border-color: var(--secondary);
+    }
+
+    .person-card.focus {
+      border-color: var(--secondary);
+      background-color: var(--highlight-bg);
+      box-shadow: 0 0 15px rgba(52, 152, 219, 0.3);
+    }
+
+    .avatar-container {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      overflow: hidden;
+      background-color: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    .avatar-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .person-card h3 {
+      font-size: 15px;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+
+    .person-card p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .badge-relation {
+      display: inline-block;
+      font-size: 10px;
+      text-transform: uppercase;
+      font-weight: bold;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: #e0e0e0;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    /* Section Arbre Dynamique */
+    .tree-tree-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 35px;
+      position: relative;
+    }
+
+    .tree-level {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .tree-level-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .tree-cards-group {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    /* Modal Biographie */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      max-width: 450px;
+      width: 90%;
+      position: relative;
+      text-align: center;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #888;
+    }
+
+    .modal-bio {
+      margin-top: 15px;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.5;
+      background: #f8f9fa;
+      padding: 12px;
+      border-radius: 8px;
+    }
+  </style>
 </head>
 <body>
 
   <header>
     <h1>Arbre Généalogique Familial</h1>
-    <p>Cliquez sur une personne pour voir sa biographie</p>
+    <p>Cliquez sur une personne pour afficher ses ancêtres et ses enfants directs</p>
   </header>
 
-  <main id="tree-container">
-    <!-- L'arbre sera généré dynamiquement ici -->
-  </main>
+  <!-- VUE 1 : ACCUEIL / GALERIE -->
+  <section id="home-view" class="view-section active">
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Rechercher une personne par son nom...">
+    </div>
+    <br>
+    <div id="gallery-container" class="gallery-grid"></div>
+  </section>
 
-  <!-- Fenêtre modale pour afficher la bio -->
-  <div id="modal" class="modal">
+  <!-- VUE 2 : ARBRE D'UNE PERSONNE SÉLECTIONNÉE -->
+  <section id="tree-view" class="view-section">
+    <div class="nav-bar">
+      <button class="btn-back" id="btn-back-home">← Retour à la liste complète</button>
+      <h2 id="focused-title" style="color: var(--primary); font-size: 18px;"></h2>
+    </div>
+
+    <div class="tree-tree-wrapper">
+      
+      <!-- NIVEAU 1 : GRANDS-PARENTS DIRECTS -->
+      <div class="tree-level" id="level-grandparents">
+        <div class="tree-level-title">Grands-Parents Directs</div>
+        <div class="tree-cards-group" id="group-grandparents"></div>
+      </div>
+
+      <!-- NIVEAU 2 : PARENTS DIRECTS -->
+      <div class="tree-level" id="level-parents">
+        <div class="tree-level-title">Parents Directs</div>
+        <div class="tree-cards-group" id="group-parents"></div>
+      </div>
+
+      <!-- NIVEAU 3 : PERSONNE CIBLE ET CONJOINT -->
+      <div class="tree-level" id="level-focus">
+        <div class="tree-level-title">Personne Sélectionnée & Conjoint</div>
+        <div class="tree-cards-group" id="group-focus"></div>
+      </div>
+
+      <!-- NIVEAU 4 : ENFANTS DIRECTS -->
+      <div class="tree-level" id="level-children">
+        <div class="tree-level-title">Enfants Directs</div>
+        <div class="tree-cards-group" id="group-children"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- MODAL BIOGRAPHIE -->
+  <div id="bio-modal" class="modal">
     <div class="modal-content">
-      <span class="close-btn">&times;</span>
-      <img id="modal-photo" src="" alt="Photo de profil">
-      <h2 id="modal-nom"></h2>
-      <p id="modal-bio"></p>
+      <span class="close-modal" id="close-modal-btn">&times;</span>
+      <div class="avatar-container" style="width: 100px; height: 100px;">
+        <img id="modal-photo" src="" alt="">
+      </div>
+      <h2 id="modal-name"></h2>
+      <div class="modal-bio" id="modal-bio-text"></div>
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    // Données des personnes fournies
+    const familyData = {
+      "personnes": [
+        { "id": 1, "nom": "Francoise Pierredon", "bio": "Ma maman", "photo": "url_photo", "pere_id": 3, "mere_id": 4, "conjoint": 2, "siblings": 13, "enfants_ids": [9, 10, 11, 12] },
+        { "id": 2, "nom": "Olivier Pierredon", "bio": "Mon Papa", "photo": "url_photo", "pere_id": 5, "mere_id": 6, "conjoint": 1, "siblings": 7, "enfants_ids": [9, 10, 11, 12] },
+        { "id": 3, "nom": "Antoine Hussherr", "bio": "Père de Francoise", "photo": "url_photo", "pere_id": 20, "mere_id": 21, "conjoint": 4, "siblings": [28, 29, 30], "enfants_ids": [1, 13, 14] },
+        { "id": 4, "nom": "Marie Louise Hussherr", "bio": "Mère de Francoise", "photo": "url_photo", "pere_id": 22, "mere_id": 23, "conjoint": 3, "siblings": 31, "enfants_ids": [1, 13, 14] },
+        { "id": 5, "nom": "Marc Pierredon", "bio": "Pere de Olivier", "photo": "url_photo", "pere_id": 24, "mere_id": 25, "conjoint": 6, "siblings": [32, 33, 34], "enfants_ids": [2, 7] },
+        { "id": 6, "nom": "Claudie Pierredon", "bio": "Mere de Olivier", "photo": "url_photo", "pere_id": 26, "mere_id": 27, "conjoint": 5, "siblings": 35, "enfants_ids": [2, 7] },
+        { "id": 7, "nom": "Laurent Pierredon", "bio": "Frere de Olivier", "photo": "url_photo", "pere_id": 5, "mere_id": 6, "conjoint": null, "siblings": 2, "enfants_ids": 8 },
+        { "id": 8, "nom": "Alicia Pierredon", "bio": "Fille de Laurent", "photo": "url_photo", "pere_id": 7, "mere_id": null, "conjoint": null, "siblings": null, "enfants_ids": null },
+        { "id": 9, "nom": "Romain Pierredon", "bio": "Fils de Francoise et Olivier", "photo": "url_photo", "pere_id": 2, "mere_id": 1, "conjoint": null, "siblings": [10, 11, 12], "enfants_ids": null },
+        { "id": 10, "nom": "Louis Pierredon", "bio": "Fils de Francoise et Olivier", "photo": "url_photo", "pere_id": 2, "mere_id": 1, "conjoint": null, "siblings": [9, 11, 12], "enfants_ids": null },
+        { "id": 11, "nom": "Jeanne Pierredon", "bio": "Fille de Francoise et Olivier", "photo": "url_photo", "pere_id": 2, "mere_id": 1, "conjoint": null, "siblings": [9, 10, 12], "enfants_ids": null },
+        { "id": 12, "nom": "Manon Pierredon", "bio": "Fille de Francoise et Olivier", "photo": "url_photo", "pere_id": 2, "mere_id": 1, "conjoint": null, "siblings": [9, 10, 11], "enfants_ids": null },
+        { "id": 13, "nom": "Danielle Bras", "bio": "Soeur de Francoise", "photo": "url_photo", "pere_id": 3, "mere_id": 4, "conjoint": 15, "siblings": 1, "enfants_ids": 16 },
+        { "id": 15, "nom": "Reinhart Bras", "bio": "Mari de Danielle", "photo": "url_photo", "pere_id": null, "mere_id": null, "conjoint": 13, "siblings": null, "enfants_ids": 16 }
+      ]
+    };
+
+    // Indexation rapide des personnes par ID
+    const peopleMap = {};
+    familyData.personnes.forEach(p => { peopleMap[p.id] = p; });
+
+    // Normalisation des tableaux (enfants_ids / siblings)
+    function toArray(val) {
+      if (val === null || val === undefined) return [];
+      return Array.isArray(val) ? val : [val];
+    }
+
+    // Avatar par défaut si pas d'image
+    function getPhotoUrl(photo) {
+      if (photo && photo !== "url_photo" && photo.trim() !== "") {
+        return photo;
+      }
+      return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 24 24' fill='%23bdc3c7'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+    }
+
+    // Création d'une carte HTML pour une personne
+    function createCard(person, relationBadge = "", isFocus = false) {
+      const card = document.createElement('div');
+      card.className = `person-card ${isFocus ? 'focus' : ''}`;
+      
+      const photoSrc = getPhotoUrl(person.photo);
+
+      card.innerHTML = `
+        ${relationBadge ? `<div class="badge-relation">${relationBadge}</div>` : ''}
+        <div class="avatar-container">
+          <img src="${photoSrc}" alt="${person.nom}">
+        </div>
+        <h3>${person.nom}</h3>
+        <p>${person.bio || ''}</p>
+      `;
+
+      card.addEventListener('click', () => {
+        showTreeForPerson(person.id);
+      });
+
+      return card;
+    }
+
+    // Affichage de la galerie sur la page d'accueil
+    function renderGallery(filterText = "") {
+      const gallery = document.getElementById('gallery-container');
+      gallery.innerHTML = "";
+
+      const filtered = familyData.personnes.filter(p => 
+        p.nom.toLowerCase().includes(filterText.toLowerCase())
+      );
+
+      if (filtered.length === 0) {
+        gallery.innerHTML = "<p style='grid-column: 1/-1; text-align:center;'>Aucune personne trouvée.</p>";
+        return;
+      }
+
+      filtered.forEach(personne => {
+        gallery.appendChild(createCard(personne));
+      });
+    }
+
+    // Génération et affichage de l'arbre ciblé pour une personne
+    function showTreeForPerson(personId) {
+      const target = peopleMap[personId];
+      if (!target) return;
+
+      // Basculer vers la vue Arbre
+      document.getElementById('home-view').classList.remove('active');
+      document.getElementById('tree-view').classList.add('active');
+
+      document.getElementById('focused-title').textContent = `Arbre direct de : ${target.nom}`;
+
+      // Nettoyage des conteneurs
+      const groupGrandparents = document.getElementById('group-grandparents');
+      const groupParents = document.getElementById('group-parents');
+      const groupFocus = document.getElementById('group-focus');
+      const groupChildren = document.getElementById('group-children');
+
+      groupGrandparents.innerHTML = "";
+      groupParents.innerHTML = "";
+      groupFocus.innerHTML = "";
+      groupChildren.innerHTML = "";
+
+      // 1. PERSONNE SELECTIONNEE ET CONJOINT
+      groupFocus.appendChild(createCard(target, "Sujet", true));
+      if (target.conjoint && peopleMap[target.conjoint]) {
+        groupFocus.appendChild(createCard(peopleMap[target.conjoint], "Conjoint(e)"));
+      }
+
+      // 2. PARENTS DIRECTS
+      const parents = [];
+      if (target.pere_id && peopleMap[target.pere_id]) {
+        parents.push({ person: peopleMap[target.pere_id], label: "Père" });
+      }
+      if (target.mere_id && peopleMap[target.mere_id]) {
+        parents.push({ person: peopleMap[target.mere_id], label: "Mère" });
+      }
+
+      if (parents.length > 0) {
+        document.getElementById('level-parents').style.display = 'flex';
+        parents.forEach(p => groupParents.appendChild(createCard(p.person, p.label)));
+      } else {
+        document.getElementById('level-parents').style.display = 'none';
+      }
+
+      // 3. GRANDS-PARENTS DIRECTS
+      const grandparents = [];
+      parents.forEach(p => {
+        if (p.person.pere_id && peopleMap[p.person.pere_id]) {
+          grandparents.push({ person: peopleMap[p.person.pere_id], label: `Grand-Père (${p.label})` });
+        }
+        if (p.person.mere_id && peopleMap[p.person.mere_id]) {
+          grandparents.push({ person: peopleMap[p.person.mere_id], label: `Grand-Mère (${p.label})` });
+        }
+      });
+
+      if (grandparents.length > 0) {
+        document.getElementById('level-grandparents').style.display = 'flex';
+        grandparents.forEach(gp => groupGrandparents.appendChild(createCard(gp.person, gp.label)));
+      } else {
+        document.getElementById('level-grandparents').style.display = 'none';
+      }
+
+      // 4. ENFANTS DIRECTS
+      const childrenIds = new Set(toArray(target.enfants_ids));
+      // Vérifier également si d'autres personnes citent cette personne comme père/mère
+      familyData.personnes.forEach(p => {
+        if (p.pere_id === target.id || p.mere_id === target.id) {
+          childrenIds.add(p.id);
+        }
+      });
+
+      if (childrenIds.size > 0) {
+        document.getElementById('level-children').style.display = 'flex';
+        childrenIds.forEach(childId => {
+          if (peopleMap[childId]) {
+            groupChildren.appendChild(createCard(peopleMap[childId], "Enfant"));
+          }
+        });
+      } else {
+        document.getElementById('level-children').style.display = 'none';
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initialisation
+    document.addEventListener('DOMContentLoaded', () => {
+      renderGallery();
+
+      // Événement recherche
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        renderGallery(e.target.value);
+      });
+
+      // Bouton retour
+      document.getElementById('btn-back-home').addEventListener('click', () => {
+        document.getElementById('tree-view').classList.remove('active');
+        document.getElementById('home-view').classList.add('active');
+      });
+    });
+  </script>
 </body>
 </html>
