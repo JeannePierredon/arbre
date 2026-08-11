@@ -141,8 +141,19 @@
       "pere_id": 3,
       "mere_id": 4,
       "conjoint": 15,
-      "siblings" : 1 ,
+      "siblings" : [1,14],
       "enfants_ids": 16
+    },
+        {
+      "id": 14,
+      "nom": "Sophie Frieh",
+      "bio": "Soeur de Francoise",
+      "photo": "chat.jpeg",
+      "pere_id": 3,
+      "mere_id": 4,
+      "conjoint": 17,
+      "siblings" : [1,13] ,
+      "enfants_ids": [18,19,20,21]
     },
         {
       "id": 15,
@@ -154,7 +165,73 @@
       "conjoint": 13,
       "siblings" : null ,
       "enfants_ids": 16
-    
+    },
+  {
+      "id": 16,
+      "nom": "Philipp Bras",
+      "bio": "Fils de Danielle et Reinhart",
+      "photo": "chat.jpeg",
+      "pere_id": 13,
+      "mere_id": 15,
+      "conjoint": null,
+      "siblings" : null ,
+      "enfants_ids": null
+    },
+    {
+      "id": 17,
+      "nom": "Laurent Frieh",
+      "bio": "Mari de Sophie",
+      "photo": "chat.jpeg",
+      "pere_id": null,
+      "mere_id": null,
+      "conjoint": 14,
+      "siblings" : null,
+      "enfants_ids": [18,19,20,21]
+    },
+    {
+      "id": 18,
+      "nom": "Honoré Frieh",
+      "bio": "Fils de Sophie",
+      "photo": "chat.jpeg",
+      "pere_id": 17,
+      "mere_id": 14,
+      "conjoint": null,
+      "siblings" : [19,20,21],
+      "enfants_ids": null
+    },
+    {
+      "id": 19,
+      "nom": "Charlotte Frieh",
+      "bio": "Fille de Sophie",
+      "photo": "chat.jpeg",
+      "pere_id": 17,
+      "mere_id": 14,
+      "conjoint": null,
+      "siblings" : [18,20,21],
+      "enfants_ids": null
+    },
+    {
+      "id": 20,
+      "nom": "William Frieh",
+      "bio": "Fils de Sophie",
+      "photo": "chat.jpeg",
+      "pere_id": 17,
+      "mere_id": 14,
+      "conjoint": null,
+      "siblings" : [18,19,21],
+      "enfants_ids": null
+    },
+    {
+      "id": 21,
+      "nom": "Paul-Antoine Frieh",
+      "bio": "Fils de Sophie",
+      "photo": "chat.jpeg",
+      "pere_id": 17,
+      "mere_id": 14,
+      "conjoint": null,
+      "siblings" : [18,19,20],
+      "enfants_ids": null
     }
+
 ]
 }
