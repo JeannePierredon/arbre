@@ -45,7 +45,6 @@
       color: var(--text-muted);
     }
 
-    /* Barre de recherche */
     .search-bar {
       max-width: 400px;
       margin: 15px auto 0;
@@ -62,7 +61,6 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    /* Bouton de retour */
     .nav-bar {
       display: flex;
       justify-content: space-between;
@@ -89,7 +87,6 @@
       background-color: #1a252f;
     }
 
-    /* Vues */
     .view-section {
       display: none;
       max-width: 1100px;
@@ -100,7 +97,6 @@
       display: block;
     }
 
-    /* Galerie d'accueil */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -175,7 +171,6 @@
       margin-bottom: 6px;
     }
 
-    /* Section Arbre Dynamique */
     .tree-tree-wrapper {
       display: flex;
       flex-direction: column;
@@ -207,57 +202,15 @@
       gap: 20px;
       flex-wrap: wrap;
     }
-
-    /* Modal Biographie */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.5);
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .modal-content {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      max-width: 450px;
-      width: 90%;
-      position: relative;
-      text-align: center;
-    }
-
-    .close-modal {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      font-size: 20px;
-      cursor: pointer;
-      color: #888;
-    }
-
-    .modal-bio {
-      margin-top: 15px;
-      text-align: left;
-      font-size: 14px;
-      line-height: 1.5;
-      background: #f8f9fa;
-      padding: 12px;
-      border-radius: 8px;
-    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>Arbre Généalogique Familial</h1>
-    <p>Cliquez sur une personne pour afficher l'ensemble de sa lignée d'ancêtres et de descendants</p>
+    <p>Cliquez sur une personne pour afficher l'ensemble de sa lignée</p>
   </header>
 
-  <!-- VUE 1 : ACCUEIL / GALERIE -->
   <section id="home-view" class="view-section active">
     <div class="search-bar">
       <input type="text" id="search-input" placeholder="Rechercher une personne par son nom...">
@@ -266,39 +219,21 @@
     <div id="gallery-container" class="gallery-grid"></div>
   </section>
 
-  <!-- VUE 2 : ARBRE D'UNE PERSONNE SÉLECTIONNÉE -->
   <section id="tree-view" class="view-section">
     <div class="nav-bar">
       <button class="btn-back" id="btn-back-home">← Retour à la liste complète</button>
       <h2 id="focused-title" style="color: var(--primary); font-size: 18px;"></h2>
     </div>
-
-    <!-- Le contenu de l'arbre sera généré dynamiquement ici par récursion -->
     <div class="tree-tree-wrapper"></div>
   </section>
-
-  <!-- MODAL BIOGRAPHIE -->
-  <div id="bio-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal" id="close-modal-btn">&times;</span>
-      <div class="avatar-container" style="width: 100px; height: 100px;">
-        <img id="modal-photo" src="" alt="">
-      </div>
-      <h2 id="modal-name"></h2>
-      <div class="modal-bio" id="modal-bio-text"></div>
-    </div>
-  </div>
 
   <script>
     let familyData = { personnes: [] };
     const peopleMap = {};
 
-    // Chargement dynamique du fichier JSON
     fetch("personnes.json")
       .then(response => {
-        if (!response.ok) {
-          throw new Error("Impossible de charger personnes.json");
-        }
+        if (!response.ok) throw new Error("Impossible de charger personnes.json");
         return response.json();
       })
       .then(data => {
@@ -307,20 +242,18 @@
           peopleMap[Number(p.id)] = p;
         });
       })
-      .then(() => {
-        renderGallery(); 
-      })
+      .then(() => { renderGallery(); })
       .catch(error => console.error("Erreur de chargement JSON:", error));
 
+    // Fonction robuste : convertit un ID unique, un tableau, ou null en un tableau propre de nombres
     function toArray(val) {
-      if (val === null || val === undefined) return [];
-      return Array.isArray(val) ? val : [val];
+      if (val === null || val === undefined || val === "null") return [];
+      if (Array.isArray(val)) return val.map(Number);
+      return [Number(val)];
     }
 
     function getPhotoUrl(photo) {
-      if (photo && photo !== "url_photo" && photo.trim() !== "") {
-        return photo;
-      }
+      if (photo && photo !== "url_photo" && photo.trim() !== "") return photo;
       return "cat.jpeg";
     }
 
@@ -328,21 +261,16 @@
       const card = document.createElement('div');
       card.className = `person-card ${isFocus ? 'focus' : ''}`;
       
-      const photoSrc = getPhotoUrl(person.photo);
-
       card.innerHTML = `
         ${relationBadge ? `<div class="badge-relation">${relationBadge}</div>` : ''}
         <div class="avatar-container">
-          <img src="${photoSrc}" alt="${person.nom}">
+          <img src="${getPhotoUrl(person.photo)}" alt="${person.nom}">
         </div>
         <h3>${person.nom}</h3>
         <p>${person.bio || ''}</p>
       `;
 
-      card.addEventListener('click', () => {
-        showTreeForPerson(person.id);
-      });
-
+      card.addEventListener('click', () => { showTreeForPerson(person.id); });
       return card;
     }
 
@@ -359,65 +287,56 @@
         return;
       }
 
-      filtered.forEach(personne => {
-        gallery.appendChild(createCard(personne));
-      });
+      filtered.forEach(personne => gallery.appendChild(createCard(personne)));
     }
 
-    // Calcul dynamique des libellés (Arrière-arrière-... grand-père / petit-enfant)
     function getGenerationLabel(depth, isAncestor = true) {
-      if (depth === 1) {
-        return isAncestor ? "Parents Directs" : "Enfants Directs";
-      }
-
-      let prefixCount = depth - 2;
+      if (depth === 1) return isAncestor ? "Parents Directs" : "Enfants Directs";
       let prefix = "";
-      for (let i = 0; i < prefixCount; i++) {
-        prefix += "Arrière-";
-      }
-
-      if (isAncestor) {
-        return `${prefix}Grand-Parents`;
-      } else {
-        return `${prefix}Petits-Enfants`;
-      }
+      for (let i = 0; i < (depth - 2); i++) prefix += "Arrière-";
+      return isAncestor ? `Grands-Parents (${prefix}Grand-Parents)` : `Petits-Enfants (${prefix}Petits-Enfants)`;
     }
 
-    // Récursion pour collecter les ancêtres par profondeur (s'arrête si les deux parents sont null)
-    function collectAncestors(personId, depth = 1, map = {}) {
+    // Récursion ancêtres sécurisée
+    function collectAncestors(personId, depth = 1, map = {}, visited = new Set()) {
       const person = peopleMap[Number(personId)];
-      if (!person) return;
+      if (!person || visited.has(Number(personId))) return;
+      visited.add(Number(personId));
 
-      const hasFather = person.pere_id !== null && peopleMap[Number(person.pere_id)];
-      const hasMother = person.mere_id !== null && peopleMap[Number(person.mere_id)];
+      const pereId = (person.pere_id !== null && person.pere_id !== "null" && person.pere_id !== "") ? Number(person.pere_id) : null;
+      const mereId = (person.mere_id !== null && person.mere_id !== "null" && person.mere_id !== "") ? Number(person.mere_id) : null;
+
+      const hasFather = pereId !== null && peopleMap[pereId];
+      const hasMother = mereId !== null && peopleMap[mereId];
 
       if (!hasFather && !hasMother) return;
 
       if (!map[depth]) map[depth] = [];
 
       if (hasFather) {
-        const father = peopleMap[Number(person.pere_id)];
+        const father = peopleMap[pereId];
         if (!map[depth].some(item => item.person.id === father.id)) {
           map[depth].push({ person: father, label: `Père (${person.nom})` });
         }
-        collectAncestors(father.id, depth + 1, map);
+        collectAncestors(father.id, depth + 1, map, visited);
       }
 
       if (hasMother) {
-        const mother = peopleMap[Number(person.mere_id)];
+        const mother = peopleMap[mereId];
         if (!map[depth].some(item => item.person.id === mother.id)) {
           map[depth].push({ person: mother, label: `Mère (${person.nom})` });
         }
-        collectAncestors(mother.id, depth + 1, map);
+        collectAncestors(mother.id, depth + 1, map, visited);
       }
     }
 
-    // Récursion pour collecter les descendants par profondeur (s'arrête si pas d'enfants)
-    function collectDescendants(personId, depth = 1, map = {}) {
+    // Récursion descendants sécurisée (avec prise en compte globale des tableaux et IDs uniques)
+    function collectDescendants(personId, depth = 1, map = {}, visited = new Set()) {
       const person = peopleMap[Number(personId)];
-      if (!person) return;
+      if (!person || visited.has(Number(personId))) return;
+      visited.add(Number(personId));
 
-      const childrenIds = new Set(toArray(person.enfants_ids).map(Number));
+      const childrenIds = new Set(toArray(person.enfants_ids));
       familyData.personnes.forEach(p => {
         if (Number(p.pere_id) === Number(person.id) || Number(p.mere_id) === Number(person.id)) {
           childrenIds.add(Number(p.id));
@@ -434,12 +353,11 @@
           if (!map[depth].some(item => item.person.id === child.id)) {
             map[depth].push({ person: child, label: `Enfant de ${person.nom}` });
           }
-          collectDescendants(child.id, depth + 1, map);
+          collectDescendants(child.id, depth + 1, map, visited);
         }
       });
     }
 
-    // Génération et affichage complet de l'arbre récursif
     function showTreeForPerson(personId) {
       const target = peopleMap[Number(personId)];
       if (!target) return;
@@ -451,16 +369,15 @@
       const wrapper = document.querySelector('.tree-tree-wrapper');
       wrapper.innerHTML = "";
 
-      // 1. Collecte des ancêtres
+      // 1. Ancêtres
       const ancestorsMap = {};
-      collectAncestors(target.id, 1, ancestorsMap);
+      collectAncestors(target.id, 1, ancestorsMap, new Set());
 
-      // Affichage des ancêtres du plus haut (plus ancien) au plus bas (parents directs)
       const ancestorDepths = Object.keys(ancestorsMap).map(Number).sort((a, b) => b - a);
       ancestorDepths.forEach(depth => {
         const levelDiv = document.createElement('div');
         levelDiv.className = 'tree-level';
-
+        
         const titleDiv = document.createElement('div');
         titleDiv.className = 'tree-level-title';
         titleDiv.textContent = getGenerationLabel(depth, true);
@@ -468,16 +385,13 @@
 
         const cardsGroup = document.createElement('div');
         cardsGroup.className = 'tree-cards-group';
-
-        ancestorsMap[depth].forEach(item => {
-          cardsGroup.appendChild(createCard(item.person, item.label));
-        });
-
+        ancestorsMap[depth].forEach(item => cardsGroup.appendChild(createCard(item.person, item.label)));
+        
         levelDiv.appendChild(cardsGroup);
         wrapper.appendChild(levelDiv);
       });
 
-      // 2. Niveau de la personne sélectionnée et son conjoint
+      // 2. Focus & Conjoint
       const focusLevel = document.createElement('div');
       focusLevel.className = 'tree-level';
 
@@ -490,17 +404,16 @@
       focusCardsGroup.className = 'tree-cards-group';
       focusCardsGroup.appendChild(createCard(target, "Sujet", true));
 
-      if (target.conjoint !== null && peopleMap[Number(target.conjoint)]) {
+      if (target.conjoint !== null && target.conjoint !== "null" && peopleMap[Number(target.conjoint)]) {
         focusCardsGroup.appendChild(createCard(peopleMap[Number(target.conjoint)], "Conjoint(e)"));
       }
       focusLevel.appendChild(focusCardsGroup);
       wrapper.appendChild(focusLevel);
 
-      // 3. Collecte des descendants
+      // 3. Descendants
       const descendantsMap = {};
-      collectDescendants(target.id, 1, descendantsMap);
+      collectDescendants(target.id, 1, descendantsMap, new Set());
 
-      // Affichage des descendants du plus proche (enfants) au plus lointain
       const descendantDepths = Object.keys(descendantsMap).map(Number).sort((a, b) => a - b);
       descendantDepths.forEach(depth => {
         const levelDiv = document.createElement('div');
@@ -513,10 +426,7 @@
 
         const cardsGroup = document.createElement('div');
         cardsGroup.className = 'tree-cards-group';
-
-        descendantsMap[depth].forEach(item => {
-          cardsGroup.appendChild(createCard(item.person, item.label));
-        });
+        descendantsMap[depth].forEach(item => cardsGroup.appendChild(createCard(item.person, item.label)));
 
         levelDiv.appendChild(cardsGroup);
         wrapper.appendChild(levelDiv);
@@ -525,7 +435,6 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Initialisation
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('search-input').addEventListener('input', (e) => {
         renderGallery(e.target.value);
