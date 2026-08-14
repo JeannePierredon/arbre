@@ -758,6 +758,63 @@
       "conjoint": null,
       "siblings" : null,
       "enfants_ids": 80
+    },
+  {
+  "personnes": [
+    {
+      "id": 90,
+      "nom": "Côme de Solere",
+      "bio": " un sacré BG",
+      "photo": "chat.jpeg",
+      "pere_id": 91,
+      "mere_id": 92,
+      "conjoint": 11,
+      "siblings" : [93,94],
+      "enfants_ids": null
+    },
+{
+      "id": 91,
+      "nom": "Pierre de Solere",
+      "bio": "Papa de Côme",
+      "photo": "chat.jpeg",
+      "pere_id": null,
+      "mere_id": null,
+      "conjoint": 92,
+      "siblings" : null,
+      "enfants_ids": [90, 93, 94]
+    },
+    {
+      "id": 92,
+      "nom": "Clara de Solere",
+      "bio": "Maman du BG",
+      "photo": "chat.jpeg",
+      "pere_id": null,
+      "mere_id": null,
+      "conjoint": 91,
+      "siblings" : [null, null, null],
+      "enfants_ids": [90, 93, 94]
+    },
+    {
+      "id": 93,
+      "nom": "Calixte de Solere",
+      "bio": "Frère de Côme ",
+      "photo": "chat.jpeg",
+      "pere_id": 91,
+      "mere_id": 92,
+      "conjoint": null,
+      "siblings" : [90, 94],
+      "enfants_ids": null
+    },
+    {
+      "id": 94,
+      "nom": "Hadrien de Solere",
+      "bio": "Petit frère de Côme",
+      "photo": "chat.jpeg",
+      "pere_id": 91
+      "mere_id": 92,
+      "conjoint": null,
+      "siblings" : [90, 93],
+      "enfants_ids": null
     }
 ]
 }
