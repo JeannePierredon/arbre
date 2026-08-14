@@ -27,10 +27,10 @@
       "nom": "Antoine Hussherr",
       "bio": "Père de Francoise",
       "photo": "chat.jpeg",
-      "pere_id": 20,
-      "mere_id": 21,
+      "pere_id": null,
+      "mere_id": null,
       "conjoint": 4,
-      "siblings" : [28, 29, 30],
+      "siblings" : [null, null, null],
       "enfants_ids": [1, 13, 14]
     },
     {
@@ -38,10 +38,10 @@
       "nom": "Marie Louise Hussherr",
       "bio": "Mère de Francoise",
       "photo": "chat.jpeg",
-      "pere_id": 22,
-      "mere_id": 23,
+      "pere_id": null,
+      "mere_id": null,
       "conjoint": 3,
-      "siblings" : 31,
+      "siblings" : null,
       "enfants_ids": [1, 13, 14]
     },
     {
