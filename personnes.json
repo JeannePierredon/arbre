@@ -49,8 +49,8 @@
       "nom": "Marc Pierredon",
       "bio": "Pere de Olivier",
       "photo": "chat.jpeg",
-      "pere_id": 24,
-      "mere_id": 25,
+      "pere_id": 35,
+      "mere_id": 36,
       "conjoint": 6,
       "siblings" : [32, 33, 34],
       "enfants_ids": [2, 7]
