@@ -294,7 +294,7 @@
       if (depth === 1) return isAncestor ? "Parents Directs" : "Enfants Directs";
       let prefix = "";
       for (let i = 0; i < (depth - 2); i++) prefix += "Arrière-";
-      return isAncestor ? `Grands-Parents (${prefix}Grand-Parents)` : `Petits-Enfants (${prefix}Petits-Enfants)`;
+      return isAncestor ? `${prefix}Grand-Parents` : `${prefix}Petits-Enfants`;
     }
 
     function collectAncestors(personId, depth = 1, map = {}, visited = new Set()) {
