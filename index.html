@@ -364,6 +364,25 @@
       });
     }
 
+    // Calcul dynamique des libellés (Arrière-arrière-... grand-père / petit-enfant)
+    function getGenerationLabel(depth, isAncestor = true) {
+      if (depth === 1) {
+        return isAncestor ? "Parents Directs" : "Enfants Directs";
+      }
+
+      let prefixCount = depth - 2;
+      let prefix = "";
+      for (let i = 0; i < prefixCount; i++) {
+        prefix += "Arrière-";
+      }
+
+      if (isAncestor) {
+        return `Grands-Parents (${prefix}Grand-Parents)`;
+      } else {
+        return `Petits-Enfants (${prefix}Petits-Enfants)`;
+      }
+    }
+
     // Récursion pour collecter les ancêtres par profondeur (s'arrête si les deux parents sont null)
     function collectAncestors(personId, depth = 1, map = {}) {
       const person = peopleMap[Number(personId)];
@@ -372,7 +391,6 @@
       const hasFather = person.pere_id !== null && peopleMap[Number(person.pere_id)];
       const hasMother = person.mere_id !== null && peopleMap[Number(person.mere_id)];
 
-      // Condition d'arrêt : si les deux parents sont null / inexistants, on stoppe cette branche
       if (!hasFather && !hasMother) return;
 
       if (!map[depth]) map[depth] = [];
@@ -399,7 +417,6 @@
       const person = peopleMap[Number(personId)];
       if (!person) return;
 
-      // Récupérer les enfants déclarés dans enfants_ids + ceux qui pointent vers cette personne
       const childrenIds = new Set(toArray(person.enfants_ids).map(Number));
       familyData.personnes.forEach(p => {
         if (Number(p.pere_id) === Number(person.id) || Number(p.mere_id) === Number(person.id)) {
@@ -407,7 +424,6 @@
         }
       });
 
-      // Condition d'arrêt : si aucun enfant, on stoppe cette branche
       if (childrenIds.size === 0) return;
 
       if (!map[depth]) map[depth] = [];
@@ -447,7 +463,7 @@
 
         const titleDiv = document.createElement('div');
         titleDiv.className = 'tree-level-title';
-        titleDiv.textContent = depth === 1 ? "Parents Directs" : `Ancêtres (Génération -${depth})`;
+        titleDiv.textContent = getGenerationLabel(depth, true);
         levelDiv.appendChild(titleDiv);
 
         const cardsGroup = document.createElement('div');
@@ -492,7 +508,7 @@
 
         const titleDiv = document.createElement('div');
         titleDiv.className = 'tree-level-title';
-        titleDiv.textContent = depth === 1 ? "Enfants Directs" : `Descendants (Génération +${depth})`;
+        titleDiv.textContent = getGenerationLabel(depth, false);
         levelDiv.appendChild(titleDiv);
 
         const cardsGroup = document.createElement('div');
@@ -523,3 +539,4 @@
   </script>
 </body>
 </html>
+
