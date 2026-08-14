@@ -245,7 +245,7 @@
       .then(() => { renderGallery(); })
       .catch(error => console.error("Erreur de chargement JSON:", error));
 
-    // Fonction robuste : convertit un ID unique, un tableau, ou null en un tableau propre de nombres
+    // Convertit un nombre ou un tableau en tableau de nombres, mais préserve les nulls
     function toArray(val) {
       if (val === null || val === undefined || val === "null") return [];
       if (Array.isArray(val)) return val.map(Number);
@@ -297,7 +297,6 @@
       return isAncestor ? `Grands-Parents (${prefix}Grand-Parents)` : `Petits-Enfants (${prefix}Petits-Enfants)`;
     }
 
-    // Récursion ancêtres sécurisée
     function collectAncestors(personId, depth = 1, map = {}, visited = new Set()) {
       const person = peopleMap[Number(personId)];
       if (!person || visited.has(Number(personId))) return;
@@ -330,7 +329,6 @@
       }
     }
 
-    // Récursion descendants sécurisée (avec prise en compte globale des tableaux et IDs uniques)
     function collectDescendants(personId, depth = 1, map = {}, visited = new Set()) {
       const person = peopleMap[Number(personId)];
       if (!person || visited.has(Number(personId))) return;
