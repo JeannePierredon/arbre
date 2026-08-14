@@ -352,158 +352,6 @@ let familyData = { personnes: [] };
       return "cat.jpeg";
     }
 
-/**
-* Récupère tous les ancêtres d'une personne (récursion infinie jusqu'aux racines)
-* @param {string} personId - ID de la personne
-* @param {number} currentDepth - Profondeur actuelle (interne)
-* @param {Set} visited - IDs déjà traités pour éviter les boucles
-* @returns {Array} Liste d'objets {person, depth, label}
-*/
-    function getAncestors(personId, currentDepth = 0, visited = new Set()) {
-  // Arrêt si ID invalide ou déjà traité
-      if (!personId || visited.has(personId)) {
-        return [];
-  }
- 
-    visited.add(personId);
-    const person = peopleMap[personId];
-    if (!person) return [];
- 
-    let ancestors = [];
-    let hasParent = false; // Vérifier s'il y a au moins un parent
- 
-  // Ajouter le père
-    if (person.pere_id) {
-      hasParent = true;
-      const father = peopleMap[person.pere_id];
-      if (father) {
-        const label = getGenerationLabel(currentDepth, "Père");
-        ancestors.push({ person: father, depth: currentDepth, label });
-     
-      // Récursion pour les ancêtres du père
-        ancestors = ancestors.concat(
-          getAncestors(person.pere_id, currentDepth + 1, visited)
-      );
-    }
-  }
- 
-  // Ajouter la mère
-    if (person.mere_id) {
-     hasParent = true;
-     const mother = peopleMap[person.mere_id];
-      if (mother) {
-        const label = getGenerationLabel(currentDepth, "Mère");
-        ancestors.push({ person: mother, depth: currentDepth, label });
-     
-      // Récursion pour les ancêtres de la mère
-        ancestors = ancestors.concat(
-         getAncestors(person.mere_id, currentDepth + 1, visited)
-        );
-      }
-    }
- 
-  // Si aucun parent trouvé, la chaîne s'arrête naturellement
-    return ancestors;
-}
- 
-/**
-* Récupère tous les descendants d'une personne (récursion infinie jusqu'aux feuilles)
-* @param {string} personId - ID de la personne
-* @param {number} currentDepth - Profondeur actuelle (interne)
-* @param {Set} visited - IDs déjà traités
-* @returns {Array} Liste d'objets {person, depth, label}
-*/
-    function getDescendants(personId, currentDepth = 0, visited = new Set()) {
-      // Arrêt si ID invalide ou déjà traité
-      if (!personId || visited.has(personId)) {
-        return [];
-     } 
- 
-      visited.add(personId);
-      const person = peopleMap[personId];
-      if (!person) return [];
- 
-      let descendants = [];
-      let hasChild = false; // Vérifier s'il y a au least un enfant
- 
-      // Récupérer les enfants directs
-      const childrenIds = new Set(toArray(person.enfants_ids));
- 
-      // Ajouter aussi les personnes qui citent cette personne comme père/mère
-      familyData.personnes.forEach(p => {
-        if (p.pere_id === personId || p.mere_id === personId) {
-          childrenIds.add(p.id);
-        }
-      });
- 
-      // Traiter chaque enfant
-      childrenIds.forEach(childId => {
-        const child = peopleMap[childId];
-        if (child) {
-          hasChild = true;
-          const label = getGenerationLabel(currentDepth, "Enfant");
-          descendants.push({ person: child, depth: currentDepth, label });
-     
-          // Récursion pour les descendants de l'enfant
-          descendants = descendants.concat(
-            getDescendants(childId, currentDepth + 1, visited)
-          );
-        }
-      });
- 
-      // Si aucun enfant trouvé, la chaîne s'arrête naturellement
-      return descendants;
-    }
- 
-/**
-* Génère les labels de génération automatiquement
-* @param {number} depth - Profondeur (0=direct, 1=+1 génération, etc.)
-* @param {string} type - "Père", "Mère" ou "Enfant"
-* @returns {string} Label formaté
-label}
-*/
-    function getGenerationLabel(depth, type) {
-      if (depth === 0) return type;
- 
-      // Construire le préfixe selon la profondeur
-      let prefix = "";
-      if (depth === 1) {
-        prefix = "Arrière-";
-      } else if (depth === 2) {
-        prefix = "Arrière-Arrière-";
-      } else if (depth === 3) {
-        prefix = "Arrière-Arrière-Arrière-";
-      } else {
-        // Pour les profondeurs > 3, utiliser un format générique
-        prefix = `${depth}x Arrière-`;
-      }
- 
-      if (type === "Père") return prefix + "Grand-Père";
-      if (type === "Mère") return prefix + "Grand-Mère";
-      if (type === "Enfant") return prefix + "Petit-Enfant";
- 
-      return type;
-    }
- 
-/**
-* Groupe les ancêtres/descendants par génération
-* @param {Array} people - Résultat de getAncestors ou getDescendants
-* @returns {Object} Objet {depth: [personnes]}
-label}
-*/
-    function groupByDepth(people) {
-      const grouped = {};
-      people.forEach(item => {
-        if (!grouped[item.depth]) {
-          grouped[item.depth] = [];
-        }
-        grouped[item.depth].push(item);
-      });
-      return grouped;
-    }
- 
-
-    
     // Création d'une carte HTML pour une personne
     function createCard(person, relationBadge = "", isFocus = false) {
       const card = document.createElement('div');
@@ -550,86 +398,84 @@ label}
     function showTreeForPerson(personId) {
       const target = peopleMap[personId];
       if (!target) return;
- 
+
       // Basculer vers la vue Arbre
       document.getElementById('home-view').classList.remove('active');
       document.getElementById('tree-view').classList.add('active');
- 
+
       document.getElementById('focused-title').textContent = `Arbre direct de : ${target.nom}`;
- 
-      // Conteneur principal
-      const wrapper = document.querySelector('.tree-tree-wrapper');
-      wrapper.innerHTML = ""; // Vider complètement
- 
-      // ===== ANCÊTRES (RÉCURSIF ILLIMITÉ) =====
-      const ancestors = getAncestors(personId);
-      const ancestorsByDepth = groupByDepth(ancestors);
- 
-      // Afficher du plus lointain au plus proche
-      const maxAncestorDepth = Math.max(...Object.keys(ancestorsByDepth).map(Number), -1);
-      for (let depth = maxAncestorDepth; depth >= 1; depth--) {
-        if (ancestorsByDepth[depth] && ancestorsByDepth[depth].length > 0) {
-         const levelDiv = createTreeLevel(
-          `${getGenerationLabel(depth, "Père").split(" ")[0]} Ancêtres`,
-          ancestorsByDepth[depth]
-        );
-        wrapper.appendChild(levelDiv);
+
+      // Nettoyage des conteneurs
+      const groupGrandparents = document.getElementById('group-grandparents');
+      const groupParents = document.getElementById('group-parents');
+      const groupFocus = document.getElementById('group-focus');
+      const groupChildren = document.getElementById('group-children');
+
+      groupGrandparents.innerHTML = "";
+      groupParents.innerHTML = "";
+      groupFocus.innerHTML = "";
+      groupChildren.innerHTML = "";
+
+      // 1. PERSONNE SELECTIONNEE ET CONJOINT
+      groupFocus.appendChild(createCard(target, "Sujet", true));
+      if (target.conjoint && peopleMap[target.conjoint]) {
+        groupFocus.appendChild(createCard(peopleMap[target.conjoint], "Conjoint(e)"));
       }
-    }
- 
-      // ===== PARENTS DIRECTS =====
+
+      // 2. PARENTS DIRECTS
       const parents = [];
       if (target.pere_id && peopleMap[target.pere_id]) {
-        parents.push({
-          person: peopleMap[target.pere_id],
-          depth: 0,
-          label: "Père"
-        });
+        parents.push({ person: peopleMap[target.pere_id], label: "Père" });
       }
       if (target.mere_id && peopleMap[target.mere_id]) {
-        parents.push({
-          person: peopleMap[target.mere_id],
-          depth: 0,
-          label: "Mère"
-         });
+        parents.push({ person: peopleMap[target.mere_id], label: "Mère" });
       }
- 
+
       if (parents.length > 0) {
-        const levelDiv = createTreeLevel("Parents Directs", parents);
-        wrapper.appendChild(levelDiv);
+        document.getElementById('level-parents').style.display = 'flex';
+        parents.forEach(p => groupParents.appendChild(createCard(p.person, p.label)));
+      } else {
+        document.getElementById('level-parents').style.display = 'none';
       }
- 
-      // ===== PERSONNE SÉLECTIONNÉE ET CONJOINT =====
-      const focusLevel = createTreeLevel(
-        "Personne Sélectionnée",
-        [{ person: target, depth: 0, label: "Sujet" }],
-        true
-      );
-      if (target.conjoint && peopleMap[target.conjoint]) {
-        const conjointCard = createCard(
-          peopleMap[target.conjoint],
-          "Conjoint(e)"
-         );
-        focusLevel.querySelector('.tree-cards-group').appendChild(conjointCard);
-       }
-      wrapper.appendChild(focusLevel);
- 
-      // ===== DESCENDANTS (RÉCURSIF ILLIMITÉ) =====
-      const descendants = getDescendants(personId);
-      const descendantsByDepth = groupByDepth(descendants);
- 
-      // Afficher du plus proche au plus lointain
-      const maxDescendantDepth = Math.max(...Object.keys(descendantsByDepth).map(Number), 0);
-      for (let depth = 1; depth <= maxDescendantDepth; depth++) {
-        if (descendantsByDepth[depth] && descendantsByDepth[depth].length > 0) {
-          const levelDiv = createTreeLevel(
-            `${getGenerationLabel(depth, "Enfant").split(" ")[0]} Descendants`,
-            descendantsByDepth[depth]
-          );
-          wrapper.appendChild(levelDiv);
+
+      // 3. GRANDS-PARENTS DIRECTS
+      const grandparents = [];
+      parents.forEach(p => {
+        if (p.person.pere_id && peopleMap[p.person.pere_id]) {
+          grandparents.push({ person: peopleMap[p.person.pere_id], label: `Grand-Père (${p.label})` });
         }
+        if (p.person.mere_id && peopleMap[p.person.mere_id]) {
+          grandparents.push({ person: peopleMap[p.person.mere_id], label: `Grand-Mère (${p.label})` });
+        }
+      });
+
+      if (grandparents.length > 0) {
+        document.getElementById('level-grandparents').style.display = 'flex';
+        grandparents.forEach(gp => groupGrandparents.appendChild(createCard(gp.person, gp.label)));
+      } else {
+        document.getElementById('level-grandparents').style.display = 'none';
       }
- 
+
+      // 4. ENFANTS DIRECTS
+      const childrenIds = new Set(toArray(target.enfants_ids));
+      // Vérifier également si d'autres personnes citent cette personne comme père/mère
+      familyData.personnes.forEach(p => {
+        if (p.pere_id === target.id || p.mere_id === target.id) {
+          childrenIds.add(p.id);
+        }
+      });
+
+      if (childrenIds.size > 0) {
+        document.getElementById('level-children').style.display = 'flex';
+        childrenIds.forEach(childId => {
+          if (peopleMap[childId]) {
+            groupChildren.appendChild(createCard(peopleMap[childId], "Enfant"));
+          }
+        });
+      } else {
+        document.getElementById('level-children').style.display = 'none';
+      }
+
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
