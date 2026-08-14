@@ -789,7 +789,7 @@
       "pere_id": null,
       "mere_id": null,
       "conjoint": 91,
-      "siblings" : [null, null, null],
+      "siblings" : null,
       "enfants_ids": [90, 93, 94]
     },
     {
@@ -808,7 +808,7 @@
       "nom": "Hadrien de Solere",
       "bio": "Petit frère de Côme",
       "photo": "chat.jpeg",
-      "pere_id": 91
+      "pere_id": 91,
       "mere_id": 92,
       "conjoint": null,
       "siblings" : [90, 93],
