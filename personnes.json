@@ -8,7 +8,7 @@
       "pere_id": 3,
       "mere_id": 4,
       "conjoint": 2,
-      "siblings" : 13,
+      "siblings" : [13,14],
       "enfants_ids": [9, 10, 11, 12]
     },
 {
@@ -53,7 +53,6 @@
       "mere_id": 25,
       "conjoint": 6,
       "siblings" : [32, 33, 34],
- 
       "enfants_ids": [2, 7]
     },
     {
@@ -587,7 +586,7 @@
     {
       "id": 66,
       "nom": "Adelaide Sourniac ",
-      "bio": "Femme de Louis Pierredon
+      "bio": "Femme de Louis Pierredon",
       "photo": "chat.jpeg",
       "pere_id": null,
       "mere_id": null,
@@ -630,7 +629,7 @@
     },
     {
       "id": 70,
-      "nom": "Rose Viene"
+      "nom": "Rose Viene",
       "bio": "Mere de Cesar David",
       "photo": "chat.jpeg",
       "pere_id": null,
@@ -708,7 +707,7 @@
     {
       "id": 77,
       "nom": "Madeleine Chauveille",
-      "bio": "Pere de Louis dit Piston, 1782-1844",
+      "bio": "Mere de Louis dit Piston, 1782-1844",
       "photo": "chat.jpeg",
       "pere_id": null,
       "mere_id": null,
